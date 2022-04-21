@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: "eu.gcr.io/ingka-cff-slm-stage/spring-boot-helloworld"
+  tag: "rd"
+  pullPolicy: IfNotPresent
+
+deployment:
+  name: spring-boot-helloworld
+  port: 8080
+
+service:
+  name: spring-boot-helloworld
+  type: LoadBalancer
+  port: 8080a
