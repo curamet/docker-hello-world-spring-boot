@@ -12,4 +12,4 @@ deployment:
 service:
   name: spring-boot-helloworld
   type: LoadBalancer
-  port: 8080a
+  port: 8080
