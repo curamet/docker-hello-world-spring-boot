@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: "eu.gcr.io/ingka-cff-slm-stage/spring-boot-helloworld"
-  tag: "rd"
+  repository: "registry.digitalocean.com/curamet/hello-world-java-demo"
+  tag: "v1"
   pullPolicy: IfNotPresent
 
 deployment:
