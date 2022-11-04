@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: "registry.digitalocean.com/curamet/hello-world-java-demo"
-  tag: "latest"
+  tag: "v1"
   pullPolicy: IfNotPresent
 
 deployment:
