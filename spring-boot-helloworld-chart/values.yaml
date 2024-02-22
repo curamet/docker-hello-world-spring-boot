@@ -1,8 +1,8 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
-  repository: "registry.digitalocean.com/curamet/hello-world-java-demo"
-  tag: "v1"
+  repository: "registry.digitalocean.com/curamet/spring-boot-api-demo"
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 deployment:
@@ -12,4 +12,4 @@ deployment:
 service:
   name: spring-boot-helloworld
   type: LoadBalancer
-  port: 8080
+  port: 8081

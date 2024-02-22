@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: spring-test-app 
-          image: eu.gcr.io/ingka-cff-slm-stage/spring-boot-helloworld:rd # Image that will be used to containers in the cluster
+          image: registry.digitalocean.com/curamet/hello-world-java-demo:latest # Image that will be used to containers in the cluster
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
@@ -40,6 +40,6 @@ spec:
               cpu: 500m
             requests:
               ephemeral-storage: "1Gi"
-              memory: 256Mi
-              cpu: 100m
+              memory: 128Mi
+              cpu: 10m
 
