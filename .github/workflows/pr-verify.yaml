@@ -1,0 +1,73 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Set vars outputs
+      id: vars
+      run: |
+         echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+         echo "CURRENT_TIMESTAMP=$(date +'%Y-%m-%dT%H%M%SZ')" >> $GITHUB_OUTPUT
+
+    - name: Verify with Maven
+      run: mvn clean verify
+
+    - name: Package with Maven
+      run: mvn clean package -Dmaven.test.skip
+
+    - name: Build Docker image
+      run: |
+        docker build -t spring-boot-api-demo:latest .
+
+    - name: Scan Docker image
+      uses: anchore/scan-action@v2
+      with:
+        image-reference: spring-boot-api-demo:latest
+        anchore-yaml-path: .github/anchore-policy.yaml
+
+    # Install doctl.
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      run: doctl registry login --expiry-seconds 1200
+
+    - name: Push image to DigitalOcean Container Registry
+      run: |
+          docker tag spring-boot-api-demo:latest registry.digitalocean.com/curamet/spring-boot-api-demo:${{ steps.vars.outputs.sha_short }}
+          docker push registry.digitalocean.com/curamet/spring-boot-api-demo:latest
+
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-1-21-9-do-0-ams3-1644871119505
+
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install demo-release ./spring-boot-helloworld-chart --set image.tag=${{ steps.vars.outputs.sha_short }} -f ./spring-boot-helloworld-chart/values.yaml --namespace test --atomic --wait
+
+    - name: Send Slack notification
+      uses: rtCamp/action-slack-notify@v2
+      with:
+        status: ${{ job.status }}
+        text: 'Deployment (Tag:${{ steps.vars.outputs.sha_short }}) to CURAMET DigitalOcean Test Cluster is complete.'
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

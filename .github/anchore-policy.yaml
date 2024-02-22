@@ -1,0 +1,15 @@
+version: '3'
+policies:
+  - name: example-policy
+    rules:
+      - id: CVE-2019-5021
+        gate: vuln
+        trigger: "always"
+        parameters:
+          - type: version
+            cvss_severity: "high"
+            cvss_v2: ">= 6"
+            cvss_v3: ">= 6"
+            vulnerable_package_name: "*"
+            fix_available: "false"
+        action: stop

@@ -1,8 +1,8 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
-  repository: "eu.gcr.io/ingka-cff-slm-stage/spring-boot-helloworld"
-  tag: "rd"
+  repository: "registry.digitalocean.com/curamet/spring-boot-api-demo"
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 deployment:
@@ -12,4 +12,4 @@ deployment:
 service:
   name: spring-boot-helloworld
   type: LoadBalancer
-  port: 8080a
+  port: 8081

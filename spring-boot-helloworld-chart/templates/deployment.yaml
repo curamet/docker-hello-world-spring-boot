@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.deployment.name }}
+  name: {{ .Release.Name }}
   labels:
     {{- include "spring-boot-helloworld.labels" . | nindent 4 }}
 spec:
