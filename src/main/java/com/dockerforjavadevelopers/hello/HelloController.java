@@ -9,7 +9,7 @@ public class HelloController {
     
     @RequestMapping("/")
     public String index() {
-        return "Hello World, SPRING BOOT API!\n";
+        return "Hello World, FROM DEMO!\n";
     }
     
 }
