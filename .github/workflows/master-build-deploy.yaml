@@ -1,11 +1,9 @@
-name: CI/CD Verify Pipeline
+name: CI/CD Build/Deploy Pipeline
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  push:
+    branches:
+      - master
 
 jobs:
   PR-VERIFY:
@@ -57,6 +55,13 @@ jobs:
         image: registry.digitalocean.com/curamet/spring-boot-api-demo:${{ steps.vars.outputs.sha_short }}
         fail-build: false
 
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-1-21-9-do-0-ams3-1644871119505
+
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install demo-release ./spring-boot-helloworld-chart --set image.tag=${{ steps.vars.outputs.sha_short }} -f ./spring-boot-helloworld-chart/values.yaml --namespace test --atomic --wait
+
     - name: Send Slack notification
       if: always()
       uses: rtCamp/action-slack-notify@v2
@@ -64,8 +69,8 @@ jobs:
         SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL_NAME }}
         SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
         SLACK_ICON: ':grimacing:'
-        SLACK_MESSAGE: "PR changes verification completed."
-        SLACK_TITLE: "PR Verify"
+        SLACK_MESSAGE: "Deployment Tag:${{ steps.vars.outputs.sha_short }} to CURAMET DigitalOcean Test Cluster is complete."
+        SLACK_TITLE: "Master build & Deploy"
         SLACK_USERNAME: "Github Actions"
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         MSG_MINIMAL: "actions,url,commit"
