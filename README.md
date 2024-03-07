@@ -63,7 +63,7 @@ $ curl localhost:8080
 
 the respone should be:
 ```
-Hello World
+Hello World - Spring Boot
 ```
 
 ##### Stop Docker Container:
