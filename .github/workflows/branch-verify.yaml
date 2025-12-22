@@ -1,12 +1,7 @@
 name: CI/CD Branch Verify Pipeline
 
 on:
-  push:
-    branches: [ "main", "develop", "master", "test/**" ]
-    paths:
-      - 'src/**'
-      - 'pom.xml'
-      - '.github/workflows/branch-verify.yaml'
+  workflow_dispatch:  # Manual trigger only - DISABLED
   pull_request:
     branches: [ "main", "master" ]
 
