@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
+replicaCount: 3
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -35,7 +35,10 @@ serviceAccount:
 podAnnotations: {}
 # This is for setting Kubernetes Labels to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-podLabels: {}
+podLabels:
+  app: spring-hello
+  environment: production
+  team: backend
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -162,8 +165,20 @@ volumeMounts: []
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/hostname: gk3-autopilot-cluster-1-pool-1-f2bec832-jwh8
 
 tolerations: []
 
-affinity: {}
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - spring-hello
+          topologyKey: kubernetes.io/hostname
